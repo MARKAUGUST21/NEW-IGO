@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IGO - Controle de Estoque</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            background-image: 
+                linear-gradient(135deg, #4a90e2 0%, #357abd 100%),
+                repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255,255,255,0.1) 20px, rgba(255,255,255,0.1) 40px);
+            height: 33vh;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                repeating-linear-gradient(45deg, transparent, transparent 15px, rgba(255,255,255,0.05) 15px, rgba(255,255,255,0.05) 30px);
+            pointer-events: none;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .back-button {
+            color: #1e3a8a;
+            font-size: 24px;
+            font-weight: bold;
+            margin-right: 15px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .back-button:hover {
+            color: #1e40af;
+        }
+
+        .logo {
+            font-size: 48px;
+            font-weight: bold;
+            color: #1e3a8a;
+            position: relative;
+        }
+
+        .logo-o {
+            position: relative;
+        }
+
+        .logo-o::after {
+            content: '▲';
+            position: absolute;
+            top: -5px;
+            right: -8px;
+            font-size: 16px;
+            color: #1e3a8a;
+        }
+
+        .user-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .user-icon {
+            width: 50px;
+            height: 50px;
+            background-color: #1e3a8a;
+            border: 3px solid white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            position: relative;
+        }
+
+        .user-icon::before {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 8px;
+        }
+
+        .user-icon::after {
+            content: '';
+            width: 30px;
+            height: 15px;
+            background-color: white;
+            border-radius: 15px 15px 0 0;
+            position: absolute;
+            bottom: 8px;
+        }
+
+        .estoque-text {
+            color: #1e3a8a;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .main-container {
+            background-color: white;
+            min-height: 67vh;
+            padding: 40px 20px;
+        }
+
+        .content-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            color: #374151;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .actions-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: #4a90e2;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #357abd;
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background-color: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #059669;
+            transform: translateY(-1px);
+        }
+
+        .btn-warning {
+            background-color: #f59e0b;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #d97706;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+            transform: translateY(-1px);
+        }
+
+        .table-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .table-header {
+            background-color: #f8fafc;
+            padding: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .table-title {
+            color: #374151;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 16px 20px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .table th {
+            background-color: #f8fafc;
+            color: #374151;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .table tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-high {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .status-medium {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-low {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            color: #374151;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .close {
+            color: #6b7280;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #374151;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            color: #4b5563;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 0 20px;
+                height: 30vh;
+            }
+
+            .logo {
+                font-size: 36px;
+            }
+
+            .main-container {
+                padding: 20px 15px;
+            }
+
+            .actions-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                max-width: none;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .modal-content {
+                margin: 10% auto;
+                padding: 20px;
+                width: 95%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 0 15px;
+            }
+
+            .logo {
+                font-size: 32px;
+            }
+
+            .user-icon {
+                width: 40px;
+                height: 40px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .table th,
+            .table td {
+                padding: 12px 15px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo-section">
+            <div class="back-button">‹‹</div>
+            <div class="logo">
+                IG<span class="logo-o">O</span>
+            </div>
+        </div>
+        <div class="user-section">
+            <div class="user-icon"></div>
+            <div class="estoque-text">Estoque</div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="content-wrapper">
+            <h1 class="page-title">Controle de Estoque</h1>
+
+            <!-- Cards de Estatísticas -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalProdutos">0</div>
+                    <div class="stat-label">Total de Produtos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="produtosBaixo">0</div>
+                    <div class="stat-label">Produtos em Baixa</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="valorTotal">R$ 0,00</div>
+                    <div class="stat-label">Valor Total</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="categorias">0</div>
+                    <div class="stat-label">Categorias</div>
+                </div>
+            </div>
+
+            <!-- Barra de Ações -->
+            <div class="actions-bar">
+                <div class="search-box">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Buscar produtos...">
+                    <button class="btn btn-primary" onclick="buscarProdutos()">
+                        🔍 Buscar
+                    </button>
+                </div>
+                <div>
+                    <button class="btn btn-success" onclick="abrirModal('adicionar')">
+                        ➕ Adicionar Produto
+                    </button>
+                    <button class="btn btn-warning" onclick="abrirModal('movimentacao')">
+                        📦 Movimentação
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tabela de Produtos -->
+            <div class="table-container">
+                <div class="table-header">
+                    <h3 class="table-title">Produtos em Estoque</h3>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Produto</th>
+                            <th>Categoria</th>
+                            <th>Quantidade</th>
+                            <th>Preço Unit.</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="produtosTable">
+                        <!-- Produtos serão inseridos aqui via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Adicionar/Editar Produto -->
+    <div id="modalProduto" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Adicionar Produto</h3>
+                <span class="close" onclick="fecharModal('modalProduto')">&times;</span>
+            </div>
+            <form id="formProduto">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="codigo" class="form-label">Código</label>
+                        <input type="text" id="codigo" name="codigo" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="categoria" class="form-label">Categoria</label>
+                        <select id="categoria" name="categoria" class="form-input" required>
+                            <option value="">Selecione...</option>
+                            <option value="eletronicos">Eletrônicos</option>
+                            <option value="roupas">Roupas</option>
+                            <option value="livros">Livros</option>
+                            <option value="casa">Casa e Jardim</option>
+                            <option value="esportes">Esportes</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="nome" class="form-label">Nome do Produto</label>
+                    <input type="text" id="nome" name="nome" class="form-input" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="quantidade" class="form-label">Quantidade</label>
+                        <input type="number" id="quantidade" name="quantidade" class="form-input" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="preco" class="form-label">Preço Unitário</label>
+                        <input type="number" id="preco" name="preco" class="form-input" min="0" step="0.01" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="descricao" class="form-label">Descrição</label>
+                    <textarea id="descricao" name="descricao" class="form-input" rows="3"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="fecharModal('modalProduto')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Movimentação -->
+    <div id="modalMovimentacao" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Movimentação de Estoque</h3>
+                <span class="close" onclick="fecharModal('modalMovimentacao')">&times;</span>
+            </div>
+            <form id="formMovimentacao">
+                <div class="form-group">
+                    <label for="produtoMov" class="form-label">Produto</label>
+                    <select id="produtoMov" name="produtoMov" class="form-input" required>
+                        <option value="">Selecione o produto...</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tipoMov" class="form-label">Tipo</label>
+                        <select id="tipoMov" name="tipoMov" class="form-input" required>
+                            <option value="entrada">Entrada</option>
+                            <option value="saida">Saída</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="quantidadeMov" class="form-label">Quantidade</label>
+                        <input type="number" id="quantidadeMov" name="quantidadeMov" class="form-input" min="1" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="motivoMov" class="form-label">Motivo</label>
+                    <input type="text" id="motivoMov" name="motivoMov" class="form-input" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="fecharModal('modalMovimentacao')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Confirmar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Dados simulados de produtos
+        let produtos = [
+            {
+                id: 1,
+                codigo: 'P001',
+                nome: 'Smartphone Samsung Galaxy',
+                categoria: 'eletronicos',
+                quantidade: 15,
+                preco: 1299.99,
+                descricao: 'Smartphone Samsung Galaxy A54 5G 128GB'
+            },
+            {
+                id: 2,
+                codigo: 'P002',
+                nome: 'Camiseta Básica',
+                categoria: 'roupas',
+                quantidade: 50,
+                preco: 29.90,
+                descricao: 'Camiseta 100% algodão, várias cores'
+            },
+            {
+                id: 3,
+                codigo: 'P003',
+                nome: 'Livro - O Senhor dos Anéis',
+                categoria: 'livros',
+                quantidade: 8,
+                preco: 45.00,
+                descricao: 'Trilogia completa em um volume'
+            },
+            {
+                id: 4,
+                codigo: 'P004',
+                nome: 'Vaso Decorativo',
+                categoria: 'casa',
+                quantidade: 3,
+                preco: 89.90,
+                descricao: 'Vaso de cerâmica para plantas'
+            }
+        ];
+
+        let editandoId = null;
+
+        // Inicializar a página
+        document.addEventListener('DOMContentLoaded', function() {
+            atualizarEstatisticas();
+            renderizarTabela();
+            atualizarSelectProdutos();
+        });
+
+        // Funções de estatísticas
+        function atualizarEstatisticas() {
+            const totalProdutos = produtos.length;
+            const produtosBaixo = produtos.filter(p => p.quantidade <= 10).length;
+            const valorTotal = produtos.reduce((total, p) => total + (p.quantidade * p.preco), 0);
+            const categorias = new Set(produtos.map(p => p.categoria)).size;
+
+            document.getElementById('totalProdutos').textContent = totalProdutos;
+            document.getElementById('produtosBaixo').textContent = produtosBaixo;
+            document.getElementById('valorTotal').textContent = `R$ ${valorTotal.toFixed(2).replace('.', ',')}`;
+            document.getElementById('categorias').textContent = categorias;
+        }
+
+        // Funções da tabela
+        function renderizarTabela() {
+            const tbody = document.getElementById('produtosTable');
+            tbody.innerHTML = '';
+
+            produtos.forEach(produto => {
+                const row = document.createElement('tr');
+                const status = getStatusEstoque(produto.quantidade);
+                
+                row.innerHTML = `
+                    <td>${produto.codigo}</td>
+                    <td>${produto.nome}</td>
+                    <td>${formatarCategoria(produto.categoria)}</td>
+                    <td>${produto.quantidade}</td>
+                    <td>R$ ${produto.preco.toFixed(2).replace('.', ',')}</td>
+                    <td><span class="status-badge status-${status}">${status}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-primary" onclick="editarProduto(${produto.id})">✏️</button>
+                            <button class="btn btn-sm btn-danger" onclick="excluirProduto(${produto.id})">🗑️</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function getStatusEstoque(quantidade) {
+            if (quantidade <= 5) return 'low';
+            if (quantidade <= 15) return 'medium';
+            return 'high';
+        }
+
+        function formatarCategoria(categoria) {
+            const categorias = {
+                'eletronicos': 'Eletrônicos',
+                'roupas': 'Roupas',
+                'livros': 'Livros',
+                'casa': 'Casa e Jardim',
+                'esportes': 'Esportes'
+            };
+            return categorias[categoria] || categoria;
+        }
+
+        // Funções de busca
+        function buscarProdutos() {
+            const termo = document.getElementById('searchInput').value.toLowerCase();
+            const produtosFiltrados = produtos.filter(produto => 
+                produto.nome.toLowerCase().includes(termo) ||
+                produto.codigo.toLowerCase().includes(termo) ||
+                produto.categoria.toLowerCase().includes(termo)
+            );
+            renderizarTabelaFiltrada(produtosFiltrados);
+        }
+
+        function renderizarTabelaFiltrada(produtosFiltrados) {
+            const tbody = document.getElementById('produtosTable');
+            tbody.innerHTML = '';
+
+            if (produtosFiltrados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px;">Nenhum produto encontrado</td></tr>';
+                return;
+            }
+
+            produtosFiltrados.forEach(produto => {
+                const row = document.createElement('tr');
+                const status = getStatusEstoque(produto.quantidade);
+                
+                row.innerHTML = `
+                    <td>${produto.codigo}</td>
+                    <td>${produto.nome}</td>
+                    <td>${formatarCategoria(produto.categoria)}</td>
+                    <td>${produto.quantidade}</td>
+                    <td>R$ ${produto.preco.toFixed(2).replace('.', ',')}</td>
+                    <td><span class="status-badge status-${status}">${status}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-primary" onclick="editarProduto(${produto.id})">✏️</button>
+                            <button class="btn btn-sm btn-danger" onclick="excluirProduto(${produto.id})">🗑️</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Funções de modal
+        function abrirModal(tipo) {
+            if (tipo === 'adicionar') {
+                document.getElementById('modalTitle').textContent = 'Adicionar Produto';
+                document.getElementById('formProduto').reset();
+                editandoId = null;
+                document.getElementById('modalProduto').style.display = 'block';
+            } else if (tipo === 'movimentacao') {
+                document.getElementById('modalMovimentacao').style.display = 'block';
+            }
+        }
+
+        function fecharModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Funções de CRUD
+        function editarProduto(id) {
+            const produto = produtos.find(p => p.id === id);
+            if (produto) {
+                editandoId = id;
+                document.getElementById('modalTitle').textContent = 'Editar Produto';
+                document.getElementById('codigo').value = produto.codigo;
+                document.getElementById('nome').value = produto.nome;
+                document.getElementById('categoria').value = produto.categoria;
+                document.getElementById('quantidade').value = produto.quantidade;
+                document.getElementById('preco').value = produto.preco;
+                document.getElementById('descricao').value = produto.descricao;
+                document.getElementById('modalProduto').style.display = 'block';
+            }
+        }
+
+        function excluirProduto(id) {
+            if (confirm('Tem certeza que deseja excluir este produto?')) {
+                produtos = produtos.filter(p => p.id !== id);
+                atualizarEstatisticas();
+                renderizarTabela();
+                atualizarSelectProdutos();
+            }
+        }
+
+        // Event listeners
+        document.getElementById('formProduto').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const produto = {
+                codigo: formData.get('codigo'),
+                nome: formData.get('nome'),
+                categoria: formData.get('categoria'),
+                quantidade: parseInt(formData.get('quantidade')),
+                preco: parseFloat(formData.get('preco')),
+                descricao: formData.get('descricao')
+            };
+
+            if (editandoId) {
+                // Editar produto existente
+                const index = produtos.findIndex(p => p.id === editandoId);
+                if (index !== -1) {
+                    produtos[index] = { ...produtos[index], ...produto };
+                }
+            } else {
+                // Adicionar novo produto
+                produto.id = Date.now();
+                produtos.push(produto);
+            }
+
+            atualizarEstatisticas();
+            renderizarTabela();
+            atualizarSelectProdutos();
+            fecharModal('modalProduto');
+            e.target.reset();
+        });
+
+        document.getElementById('formMovimentacao').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const produtoId = parseInt(formData.get('produtoMov'));
+            const tipo = formData.get('tipoMov');
+            const quantidade = parseInt(formData.get('quantidadeMov'));
+            const motivo = formData.get('motivoMov');
+
+            const produto = produtos.find(p => p.id === produtoId);
+            if (produto) {
+                if (tipo === 'entrada') {
+                    produto.quantidade += quantidade;
+                } else {
+                    if (produto.quantidade < quantidade) {
+                        alert('Quantidade insuficiente em estoque!');
+                        return;
+                    }
+                    produto.quantidade -= quantidade;
+                }
+
+                // Aqui você pode adicionar um log de movimentação
+                console.log(`Movimentação: ${tipo} de ${quantidade} unidades do produto ${produto.nome}. Motivo: ${motivo}`);
+
+                atualizarEstatisticas();
+                renderizarTabela();
+                fecharModal('modalMovimentacao');
+                e.target.reset();
+                alert('Movimentação realizada com sucesso!');
+            }
+        });
+
+        function atualizarSelectProdutos() {
+            const select = document.getElementById('produtoMov');
+            select.innerHTML = '<option value="">Selecione o produto...</option>';
+            
+            produtos.forEach(produto => {
+                const option = document.createElement('option');
+                option.value = produto.id;
+                option.textContent = `${produto.codigo} - ${produto.nome} (Estoque: ${produto.quantidade})`;
+                select.appendChild(option);
+            });
+        }
+
+        // Fechar modal ao clicar fora
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // Funcionalidade do botão voltar
+        document.querySelector('.back-button').addEventListener('click', function() {
+            if (confirm('Deseja voltar?')) {
+                console.log('Voltando...');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IGO - Dashboard Principal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            background-image: 
+                linear-gradient(135deg, #4a90e2 0%, #357abd 100%),
+                repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255,255,255,0.1) 20px, rgba(255,255,255,0.1) 40px);
+            height: 33vh;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                repeating-linear-gradient(45deg, transparent, transparent 15px, rgba(255,255,255,0.05) 15px, rgba(255,255,255,0.05) 30px);
+            pointer-events: none;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .logo {
+            font-size: 48px;
+            font-weight: bold;
+            color: #1e3a8a;
+            position: relative;
+        }
+
+        .logo-o {
+            position: relative;
+        }
+
+        .logo-o::after {
+            content: '▲';
+            position: absolute;
+            top: -5px;
+            right: -8px;
+            font-size: 16px;
+            color: #1e3a8a;
+        }
+
+        .user-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .user-icon {
+            width: 50px;
+            height: 50px;
+            background-color: #1e3a8a;
+            border: 3px solid white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            position: relative;
+        }
+
+        .user-icon::before {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 8px;
+        }
+
+        .user-icon::after {
+            content: '';
+            width: 30px;
+            height: 15px;
+            background-color: white;
+            border-radius: 15px 15px 0 0;
+            position: absolute;
+            bottom: 8px;
+        }
+
+        .user-info {
+            color: #1e3a8a;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .main-container {
+            background-color: white;
+            min-height: 67vh;
+            padding: 40px 20px;
+        }
+
+        .content-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            color: #374151;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .page-subtitle {
+            color: #6b7280;
+            font-size: 18px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(74, 144, 226, 0.3);
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .module-card {
+            background-color: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #4a90e2, #10b981, #f59e0b, #ef4444);
+        }
+
+        .module-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .module-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+        }
+
+        .module-info h3 {
+            color: #374151;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .module-info p {
+            color: #6b7280;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .module-description {
+            color: #6b7280;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .module-features {
+            margin-bottom: 25px;
+        }
+
+        .feature-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .feature-list li {
+            color: #4b5563;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-list li::before {
+            content: '✓';
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .module-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: #4a90e2;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #357abd;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background-color: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background-color: #f59e0b;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #d97706;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4b5563;
+            transform: translateY(-2px);
+        }
+
+        .quick-actions {
+            background-color: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .quick-actions h3 {
+            color: #374151;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .quick-action {
+            background-color: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .quick-action:hover {
+            border-color: #4a90e2;
+            background-color: #f0f9ff;
+            transform: translateY(-2px);
+        }
+
+        .quick-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .quick-label {
+            color: #374151;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .recent-activity {
+            background-color: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .recent-activity h3 {
+            color: #374151;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background-color: #f8fafc;
+            border-radius: 10px;
+            border-left: 4px solid #4a90e2;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+        }
+
+        .activity-content h5 {
+            color: #374151;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .activity-content p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .activity-time {
+            color: #9ca3af;
+            font-size: 12px;
+            margin-left: auto;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 0 20px;
+                height: 30vh;
+            }
+
+            .logo {
+                font-size: 36px;
+            }
+
+            .main-container {
+                padding: 20px 15px;
+            }
+
+            .modules-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .feature-list {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 0 15px;
+            }
+
+            .logo {
+                font-size: 32px;
+            }
+
+            .user-icon {
+                width: 40px;
+                height: 40px;
+            }
+
+            .module-card {
+                padding: 20px;
+            }
+
+            .quick-actions,
+            .recent-activity {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo-section">
+            <div class="logo">
+                IG<span class="logo-o">O</span>
+            </div>
+        </div>
+        <div class="user-section">
+            <div class="user-icon"></div>
+            <div class="user-info">Dashboard</div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="content-wrapper">
+            <h1 class="page-title">Sistema IGO - Dashboard Principal</h1>
+            <p class="page-subtitle">Gerencie todos os módulos do sistema em um só lugar</p>
+
+            <!-- Estatísticas Rápidas -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">1,247</div>
+                    <div class="stat-label">Produtos em Estoque</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">89</div>
+                    <div class="stat-label">Solicitações Pendentes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">45</div>
+                    <div class="stat-label">Usuários Ativos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">156</div>
+                    <div class="stat-label">Relatórios Gerados</div>
+                </div>
+            </div>
+
+            <!-- Módulos do Sistema -->
+            <div class="modules-grid">
+                <!-- Módulo de Estoque -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-icon">📦</div>
+                        <div class="module-info">
+                            <h3>Controle de Estoque</h3>
+                            <p>Gerencie produtos e inventário</p>
+                        </div>
+                    </div>
+                    <p class="module-description">
+                        Sistema completo para controle de estoque com cadastro de produtos, 
+                        movimentações, alertas de baixa e relatórios detalhados.
+                    </p>
+                    <div class="module-features">
+                        <ul class="feature-list">
+                            <li>Cadastro de Produtos</li>
+                            <li>Controle de Quantidades</li>
+                            <li>Alertas de Estoque Baixo</li>
+                            <li>Movimentações</li>
+                            <li>Categorização</li>
+                            <li>Relatórios</li>
+                        </ul>
+                    </div>
+                    <div class="module-actions">
+                        <button class="btn btn-primary" onclick="abrirEstoque()">
+                            📦 Abrir Estoque
+                        </button>
+                        <button class="btn btn-secondary" onclick="verRelatoriosEstoque()">
+                            📊 Relatórios
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Módulo de Solicitações -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-icon">📋</div>
+                        <div class="module-info">
+                            <h3>Gestão de Solicitações</h3>
+                            <p>Gerencie pedidos e aprovações</p>
+                        </div>
+                    </div>
+                    <p class="module-description">
+                        Sistema de solicitações com fluxo de aprovação, 
+                        rastreamento de status e gestão de departamentos.
+                    </p>
+                    <div class="module-features">
+                        <ul class="feature-list">
+                            <li>Nova Solicitação</li>
+                            <li>Fluxo de Aprovação</li>
+                            <li>Rastreamento de Status</li>
+                            <li>Gestão de Departamentos</li>
+                            <li>Histórico Completo</li>
+                            <li>Notificações</li>
+                        </ul>
+                    </div>
+                    <div class="module-actions">
+                        <button class="btn btn-primary" onclick="abrirSolicitacoes()">
+                            📋 Abrir Solicitações
+                        </button>
+                        <button class="btn btn-success" onclick="novaSolicitacao()">
+                            ➕ Nova Solicitação
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Módulo de Relatórios -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-icon">📊</div>
+                        <div class="module-info">
+                            <h3>Relatórios</h3>
+                            <p>Análises e insights do sistema</p>
+                        </div>
+                    </div>
+                    <p class="module-description">
+                        Geração de relatórios personalizados com gráficos, 
+                        exportação em múltiplos formatos e agendamento automático.
+                    </p>
+                    <div class="module-features">
+                        <ul class="feature-list">
+                            <li>Relatórios Personalizados</li>
+                            <li>Gráficos Interativos</li>
+                            <li>Exportação (PDF, Excel)</li>
+                            <li>Agendamento Automático</li>
+                            <li>Dashboards em Tempo Real</li>
+                            <li>Filtros Avançados</li>
+                        </ul>
+                    </div>
+                    <div class="module-actions">
+                        <button class="btn btn-primary" onclick="abrirRelatorios()">
+                            📊 Abrir Relatórios
+                        </button>
+                            <button class="btn btn-warning" onclick="gerarRelatorioRapido()">
+                            ⚡ Rápido
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Módulo de Recursos Complementares -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-icon">🔧</div>
+                        <div class="module-info">
+                            <h3>Recursos Complementares</h3>
+                            <p>Ferramentas e configurações</p>
+                        </div>
+                    </div>
+                    <p class="module-description">
+                        Recursos avançados incluindo filtros inteligentes, 
+                        backup automático e configurações de acessibilidade.
+                    </p>
+                    <div class="module-features">
+                        <ul class="feature-list">
+                            <li>Filtros Inteligentes</li>
+                            <li>Backup Automático</li>
+                            <li>Interface Responsiva</li>
+                            <li>Acessibilidade</li>
+                            <li>Busca Semântica</li>
+                            <li>Sincronização</li>
+                        </ul>
+                    </div>
+                    <div class="module-actions">
+                        <button class="btn btn-primary" onclick="abrirRecursos()">
+                            🔧 Abrir Recursos
+                        </button>
+                        <button class="btn btn-secondary" onclick="configuracoes()">
+                            ⚙️ Configurações
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ações Rápidas -->
+            <div class="quick-actions">
+                <h3>⚡ Ações Rápidas</h3>
+                <div class="quick-grid">
+                    <div class="quick-action" onclick="cadastrarUsuario()">
+                        <div class="quick-icon">👤</div>
+                        <div class="quick-label">Cadastrar Usuário</div>
+                    </div>
+                    <div class="quick-action" onclick="adicionarProduto()">
+                        <div class="quick-icon">➕</div>
+                        <div class="quick-label">Adicionar Produto</div>
+                    </div>
+                    <div class="quick-action" onclick="gerarRelatorio()">
+                        <div class="quick-icon">📈</div>
+                        <div class="quick-label">Gerar Relatório</div>
+                    </div>
+                    <div class="quick-action" onclick="executarBackup()">
+                        <div class="quick-icon">💾</div>
+                        <div class="quick-label">Executar Backup</div>
+                    </div>
+                    <div class="quick-action" onclick="verNotificacoes()">
+                        <div class="quick-icon">🔔</div>
+                        <div class="quick-label">Notificações</div>
+                    </div>
+                    <div class="quick-action" onclick="configuracoesSistema()">
+                        <div class="quick-icon">⚙️</div>
+                        <div class="quick-label">Configurações</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Atividades Recentes -->
+            <div class="recent-activity">
+                <h3>🕒 Atividades Recentes</h3>
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <div class="activity-icon">📦</div>
+                        <div class="activity-content">
+                            <h5>Produto Adicionado</h5>
+                            <p>Notebook Dell Latitude foi adicionado ao estoque</p>
+                        </div>
+                        <div class="activity-time">2 min atrás</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">📋</div>
+                        <div class="activity-content">
+                            <h5>Solicitação Aprovada</h5>
+                            <p>Solicitação de material de escritório foi aprovada</p>
+                        </div>
+                        <div class="activity-time">15 min atrás</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">📊</div>
+                        <div class="activity-content">
+                            <h5>Relatório Gerado</h5>
+                            <p>Relatório mensal de estoque foi gerado automaticamente</p>
+                        </div>
+                        <div class="activity-time">1 hora atrás</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">💾</div>
+                        <div class="activity-content">
+                            <h5>Backup Executado</h5>
+                            <p>Backup automático da base de dados foi concluído</p>
+                        </div>
+                        <div class="activity-time">2 horas atrás</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados simulados
+        let estatisticas = {
+            produtos: 1247,
+            solicitacoes: 89,
+            usuarios: 45,
+            relatorios: 156
+        };
+
+        // Funções de navegação para os módulos
+        function abrirEstoque() {
+            if (confirm('Deseja abrir o módulo de Controle de Estoque?')) {
+                window.open('estoque.html', '_blank');
+            }
+        }
+
+        function abrirSolicitacoes() {
+            if (confirm('Deseja abrir o módulo de Gestão de Solicitações?')) {
+                window.open('solicitacoes.html', '_blank');
+            }
+        }
+
+        function abrirRelatorios() {
+            if (confirm('Deseja abrir o módulo de Relatórios?')) {
+                window.open('relatorios.html', '_blank');
+            }
+        }
+
+        function abrirRecursos() {
+            if (confirm('Deseja abrir o módulo de Recursos Complementares?')) {
+                window.open('recursos_complementares.html', '_blank');
+            }
+        }
+
+        // Funções de ações rápidas
+        function cadastrarUsuario() {
+            if (confirm('Deseja abrir a tela de cadastro de usuário?')) {
+                window.open('cadastro.html', '_blank');
+            }
+        }
+
+        function adicionarProduto() {
+            alert('Redirecionando para adição de produto...');
+            // Aqui você pode implementar a lógica para abrir o modal ou redirecionar
+        }
+
+        function gerarRelatorio() {
+            alert('Gerando relatório rápido...');
+            // Aqui você pode implementar a lógica para gerar relatório
+        }
+
+        function executarBackup() {
+            if (confirm('Deseja executar backup manual agora?')) {
+                alert('Iniciando backup...');
+                // Aqui você pode implementar a lógica de backup
+            }
+        }
+
+        function verNotificacoes() {
+            alert('Você tem 3 notificações não lidas:\n\n1. Produto em estoque baixo\n2. Solicitação aguardando aprovação\n3. Backup concluído com sucesso');
+        }
+
+        function configuracoesSistema() {
+            alert('Abrindo configurações do sistema...');
+            // Aqui você pode implementar a lógica para abrir configurações
+        }
+
+        // Funções auxiliares dos módulos
+        function verRelatoriosEstoque() {
+            alert('Relatórios de Estoque:\n\n- Inventário Geral\n- Produtos em Baixa\n- Movimentações\n- Valor Total\n- Categorias');
+        }
+
+        function novaSolicitacao() {
+            alert('Criando nova solicitação...');
+            // Aqui você pode implementar a lógica para nova solicitação
+        }
+
+        function gerarRelatorioRapido() {
+            alert('Relatórios Rápidos:\n\n- Estoque Atual\n- Solicitações do Dia\n- Usuários Ativos\n- Atividade do Sistema');
+        }
+
+        function configuracoes() {
+            alert('Configurações do Sistema:\n\n- Usuários e Permissões\n- Backup e Segurança\n- Interface e Tema\n- Notificações\n- Integrações');
+        }
+
+        // Atualizar estatísticas em tempo real (simulado)
+        function atualizarEstatisticas() {
+            // Simular atualizações
+            setInterval(() => {
+                estatisticas.produtos += Math.floor(Math.random() * 3) - 1;
+                estatisticas.solicitacoes += Math.floor(Math.random() * 2) - 1;
+                
+                // Atualizar display
+                document.querySelectorAll('.stat-number')[0].textContent = estatisticas.produtos;
+                document.querySelectorAll('.stat-number')[1].textContent = estatisticas.solicitacoes;
+            }, 30000); // Atualizar a cada 30 segundos
+        }
+
+        // Inicializar dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            atualizarEstatisticas();
+            
+            // Adicionar efeitos de hover nos cards
+            document.querySelectorAll('.module-card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px) scale(1.02)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+        });
+
+        // Navegação por teclado para acessibilidade
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                if (confirm('Deseja sair do sistema?')) {
+                    console.log('Saindo do sistema...');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
