@@ -1,4 +1,4 @@
-from Models.usario import Usuario
+from Models.usuario import Usuario
 
 usuarios = [] # por enquanto guardar memoria 
 

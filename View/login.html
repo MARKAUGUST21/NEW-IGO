@@ -329,36 +329,35 @@
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const nome = document.getElementById('nome').value;
-            const email = document.getElementById('email').value;
-            
-            if (nome.trim() === '' || email.trim() === '') {
-                alert('Por favor, preencha todos os campos obrigatórios.');
-                return;
-            }
-            
-            // Aqui você pode adicionar a lógica para enviar os dados para o backend
-            console.log('Dados do formulário:', { nome, email });
-            alert('Formulário enviado com sucesso!');
+     document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const nome = document.getElementById('nome').value;
+    const email = document.getElementById('email').value;
+
+    if (nome.trim() === '' || email.trim() === '') {
+        alert('Por favor, preencha todos os campos obrigatórios.');
+        return;
+    }
+
+    try {
+        const response = await fetch('/cadastrar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ nome, email })
         });
 
-        function cancelar() {
-            if (confirm('Tem certeza que deseja cancelar?')) {
-                // Aqui você pode redirecionar para outra página ou limpar o formulário
-                document.getElementById('loginForm').reset();
-            }
+        const data = await response.json();
+        if (data.status === "sucesso") {
+            alert(`Usuário cadastrado: ${data.nome} - ${data.email}`);
+        } else {
+            alert(data.mensagem);
         }
-
-        // Adicionar funcionalidade ao botão de voltar
-        document.querySelector('.back-button').addEventListener('click', function() {
-            if (confirm('Deseja voltar?')) {
-                // Aqui você pode redirecionar para a página anterior
-                console.log('Voltando...');
-            }
-        });
+    } catch (err) {
+        console.error("Erro:", err);
+        alert("Erro ao cadastrar.");
+    }
+});
     </script>
 </body>
 </html>
